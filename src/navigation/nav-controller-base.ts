@@ -232,7 +232,9 @@ export class NavControllerBase extends Ion implements NavController {
     }
 
     // Enqueue transition instruction
-    this._queue.push(ti);
+    if (this._queue) {
+      this._queue.push(ti);
+    }
 
     // if there isn't a transition already happening
     // then this will kick off this transition
@@ -303,8 +305,13 @@ export class NavControllerBase extends Ion implements NavController {
 
     // there is no transition happening right now
     // get the next instruction
-    const ti = this._queue.shift();
-    if (!ti) {
+    let ti: any;
+    if (this._queue) {
+      ti = this._queue.shift();
+      if (!ti) {
+        return false;
+      }
+    } else {
       return false;
     }
 
@@ -522,7 +529,7 @@ export class NavControllerBase extends Ion implements NavController {
     assert(enteringView, 'enteringView must be non null');
     assert(enteringView._state === STATE_NEW, 'enteringView state must be NEW');
 
-     // render the entering view, and all child navs and views
+    // render the entering view, and all child navs and views
     // entering view has not been initialized yet
     const componentProviders = ReflectiveInjector.resolve([
       { provide: NavController, useValue: this },
@@ -1087,11 +1094,11 @@ export class NavControllerBase extends Ion implements NavController {
 
   canSwipeBack(): boolean {
     return (this._sbEnabled &&
-            !this._isPortal &&
-            !this._children.length &&
-            !this.isTransitioning() &&
-            this._app.isEnabled() &&
-            this.canGoBack());
+      !this._isPortal &&
+      !this._children.length &&
+      !this.isTransitioning() &&
+      this._app.isEnabled() &&
+      this.canGoBack());
   }
 
   canGoBack(): boolean {
@@ -1172,7 +1179,7 @@ export class NavControllerBase extends Ion implements NavController {
   dismissPageChangeViews() {
     for (let view of this._views) {
       if (view.data && view.data.dismissOnPageChange) {
-        view.dismiss().catch(() => {});
+        view.dismiss().catch(() => { });
       }
     }
   }

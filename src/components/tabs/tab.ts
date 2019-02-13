@@ -285,7 +285,7 @@ export class Tab extends NavControllerBase implements ITab {
   /**
    * @hidden
    */
-  @ViewChild('viewport', {read: ViewContainerRef})
+  @ViewChild('viewport', { read: ViewContainerRef })
   set _vp(val: ViewContainerRef) {
     this.setViewport(val);
   }
@@ -387,11 +387,15 @@ export class Tab extends NavControllerBase implements ITab {
   /**
    * @hidden
    */
-  setSelected(isSelected: boolean) {
+  setSelected(isSelected: boolean, shouldDetach: Boolean = false) {
     this.isSelected = isSelected;
 
     this.setElementClass('show-tab', isSelected);
     this.setElementAttribute('aria-hidden', (!isSelected).toString());
+
+    if (shouldDetach) {
+      return;
+    }
 
     if (isSelected) {
       // this is the selected tab, detect changes
